@@ -18,6 +18,10 @@ can confirm that what was released is what was run.
 | the per-file corpus manifest | `manifests/corpus_results.csv` (per-file SHA-256, family, size, max section entropy, packed flag, v3 and v4 rule matches) and `manifests/corpus_ext_new14.csv` (the 14-sample 2019–2023 extension) |
 | the null-model and decay experiment outputs | `manifests/null_manifest.csv`, `results/external_rules_v4.csv`, `results/external_rules_v5.csv`, `results/external_ablation.csv`, `results/external_decay.csv`, `results/chainscan_results.txt` |
 | the pinned environment record with versions and SHA-256 digests | `ENVIRONMENT.txt` |
+| the interval code (self-test reproduces every printed interval) | `tools/wilson_intervals.py` |
+| the null-model per-file rule results | `results/null_rules_v5.csv` |
+| the verifier output for the 14 era-extension corpus files | appended to `results/chainscan_results.txt` |
+| the licence | `LICENSE` (Apache 2.0) |
 
 `Detection_scripts/` holds the four known-sample detectors for the stealer
 families this repository tracks (Rusty, Myth, Snowflake, Prysmax) — SHA-256 +
@@ -27,7 +31,7 @@ round-by-round measurement log behind every number in Section 7 of the paper.
 ## Malware samples are NOT redistributed
 
 The 70 external malware binaries are referenced by SHA-256 hash only (see the
-manifests); sources are documented in the paper's Appendix B. The clean
+manifests); sources are documented in the paper's supplementary section S.3. The clean
 controls and null-model source binaries are vendor software (PuTTY,
 Sysinternals, 7-Zip, Python, SQLite, UPX, Ninja) and are likewise not
 redistributed — obtain them from the vendor sites and check against the hashes
@@ -46,6 +50,14 @@ c3e6110ac88fcfbcfaf442aaeca47bb0c08d513ddb31cd96d843c1f455ffc8cf  rules tree, v4
 ```
 
 `SHA256SUMS.txt` lists every file in this release.
+
+`rules-frozen-v5.1` (2026-11-12) corrects repository contents only: verifier crash
+fixes in `tools/sride_triage.py` (no measured result changes; see the v5.1 addendum
+in `RESULTS.md`), completed stealer-binary and era-extension verifier scans, the
+interval code, the null-model per-file results, corrected CSV flags, the licence
+and the sha256 column in `manifests/corpus_results.csv`. The digests above are the
+`rules-frozen-v5` digests quoted in the paper; the verifier-tree digest under
+v5.1 is `7b1d6eb17271679de8ac84534c321349477c779aa04f8e0bb402454bfbf451fc`.
 
 ## Pinned analysis environment
 

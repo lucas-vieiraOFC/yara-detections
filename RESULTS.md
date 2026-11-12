@@ -84,7 +84,7 @@ Per-file yara CLI spawn, 59 files: v3 set 98 files/s, v4 set 92 files/s
 spawn-dominated and not comparable to the batch-scan figure).
 
 ## 10. Development (fitting) table — retained, relabelled
-Per-family Wilson CIs recomputed by `python3 -m ropkit.stats` (self-test PASSED,
+Per-family Wilson CIs recomputed by `tools/wilson_intervals.py` (self-test PASSED,
 reproduces all eight intervals printed in v3): Generic 88.0 [76.2,94.4]
 (44/50), AsyncRAT 96.0 [86.5,98.9] (48/50), njRAT 100.0 [88.6,100.0] (30/30),
 Custom C2 90.0 [59.6,98.2] (9/10), BankUPX 100.0 [83.9,100.0] (20/20),
@@ -191,7 +191,7 @@ v3 and v4 rule files additionally verified on the 104 new files (14 corpus +
 all 177 files for all three rule sets.
 
 ### 8.4 Editorial (review corrections C1, C5)
-- Development fitting table moved to Appendix C (supplementary), labelled
+- Development fitting table moved to supplementary section S.4, labelled
   non-reproducible fitting diagnostic; §7.3 is now a pointer.
 - Related-work search run 2026-08-17 across DBLP, Crossref, arXiv (three query
   families from the review): no uncited close prior art; nearest hits (STROP,
@@ -220,7 +220,7 @@ Review flagged five stale numbers, all residue of the 56-file corpus.
 3. "59-file" (§5.3 loop-cost timing) and "59/59" reproduction claims (§7.4,
    §7.11) now explicitly labelled v4-era corpus.
 4. Abstract said 39 family sets → 35 (matches §7.4 and §8).
-5. Batch wording aligned: §7.4 and Appendix B now both state 13 batches /
+5. Batch wording aligned: §7.4 and supplementary section S.3 now both state 13 batches /
    14 binaries / 11 families for the jstrosch 2019–2023 samples.
 
 Additional stale value caught while fixing (not flagged by the review):
@@ -237,3 +237,47 @@ form; principal-finding sentence added after the 0/73 report. Q3 (§7.4):
 blocking-decision sentence added after the clean-controls report. Funding
 block added to the declaration sections (was the only one of the five
 required blocks missing). PDF now 41 pages.
+
+
+## v5.1 addendum (2026-11-12) — repository corrections for the Computers & Security resubmission
+
+Verifier (`tools/sride_triage.py`) — two crash fixes, no measured result changes:
+- `chain_scan` bounded the pointer-run loop by the section's declared raw size; a
+  section whose raw data overruns the end of the file aborted the scan with a
+  struct.error. This affected exactly one corpus file (TrickBot-2019__a32854ee.exe,
+  whose v5 scan produced no verdict). The loop is now bounded by the bytes actually
+  present; TrickBot completes with "no chains found (rejected 0 pointer runs)".
+  Regression check: AgentTesla-2022 (0 and 2), Dyre__b44634 (3) and putty.exe (182)
+  reproduce the v5 blocks exactly.
+- `print_text` no longer crashes on per-file error reports (KeyError: 'size').
+
+Verifier output (`results/chainscan_results.txt`):
+- The three stealer-binary entries were crash tracebacks under v5 (those scans had
+  aborted). They are replaced by full scans of all six in-repository stealer
+  binaries: rustystealer.exe 311, stealer.exe 226, 55a418f8...exe 22 and
+  decrypted_payload.dll 429 rejected pointer runs, all likewise rejected;
+  payload_v2.bin and stage3_decompressed.bin are raw payloads, not PE files.
+  NOTE: the paper (v9.3) prints "up to 311 candidate runs"; with the complete set
+  the maximum is 429 (Myth stage-2 DLL). The 311 figure matches section 6 for the
+  subset scanned at that time.
+- Appended: full scans of the 14 era-extension corpus files (2019-2023), every one
+  "no chains found"; file hashes verified against manifests/corpus_ext_new14.csv.
+
+New or corrected files:
+- `tools/wilson_intervals.py`: the interval code; `python3 tools/wilson_intervals.py
+  --test` reproduces all 27 intervals printed in the paper, its supplementary
+  material and this run record, exactly.
+- `results/null_rules_v5.csv`: per-file null-model results for the v5 set
+  (cross-check against section 8.2: generic 32/33 shuffled, 33/33 random, 33/33
+  entropy, 98/99 pooled; NjRAT triad 95/99; banking shape 29/99; entropy-guarded
+  staging 12/99; x64 syscall 0/99).
+- `LICENSE`: Apache 2.0.
+- `manifests/corpus_results.csv`: sha256 column added for all 66 rows.
+- `results/external_rules_v5.csv`: era-extension rows corrected (family names and
+  packed flags; totals 20/70 packed, matching the paper's Table 3).
+
+Digests (construction unchanged: SHA-256 over the name-sorted concatenation of
+filename || hexSHA256(file)):
+- verifier tree, rules-frozen-v5.1: 7b1d6eb17271679de8ac84534c321349477c779aa04f8e0bb402454bfbf451fc
+- the paper's quoted verifier digest (4ebac58f...) refers to rules-frozen-v5.
+- rules trees unchanged (rules/ untouched).

@@ -207,14 +207,15 @@ def chain_scan(pe, data, min_run=MIN_CHAIN_POINTERS):
         i = 0
         run = []
         imms = 0
-        while i + width <= raw_size:
+        avail = min(raw_size, len(data) - raw_off)
+        while i + width <= avail:
             v = read_ptr(data, raw_off + i)
             if in_exec(v):
                 run.append((raw_off + i, v))
                 i += width
             else:
                 # allow one immediate slot between pointers (POP argument)
-                if run and i + 2 * width <= raw_size and \
+                if run and i + 2 * width <= avail and \
                         in_exec(read_ptr(data, raw_off + i + width)):
                     imms += 1
                     i += width          # skip the immediate
@@ -554,6 +555,9 @@ def extract_myth(path, out_path, key_ct_off, payload_off, payload_len, seed):
 # ---------------------------------------------------------------------------
 
 def print_text(rep):
+    if rep.get("error") and "size" not in rep:
+        print(f"== {rep['path']}\n   error: {rep['error']}")
+        return
     print(f"== {rep['path']}  ({rep['size']} bytes)")
     print(f"   sha256 {rep['sha256']}")
     print(f"   entropy(file) {rep['entropy_file']}")
