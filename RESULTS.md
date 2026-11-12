@@ -281,3 +281,40 @@ filename || hexSHA256(file)):
 - verifier tree, rules-frozen-v5.1: 7b1d6eb17271679de8ac84534c321349477c779aa04f8e0bb402454bfbf451fc
 - the paper's quoted verifier digest (4ebac58f...) refers to rules-frozen-v5.
 - rules trees unchanged (rules/ untouched).
+
+
+## v5.2 addendum (2026-11-12) — the clean scan corpus, actually built and measured
+
+The paper's earlier text described a "50,000-file clean scan corpus" and a
+43.2 s / 1,157 samples/s throughput on an i7-12700K. Those figures were inherited
+from the paper analysed in the project's literature review (`_paper_raw.txt`),
+not measured by this work, and no manifest existed (Anexo C item R3). The corpus
+has now actually been built and scanned:
+
+- **Corpus**: 21,728 clean PE binaries extracted from the licensed Windows 11
+  installation in the author's own winlab VM (NTFS volume "Windows", build
+  10.0.26100), using dissect.ntfs over the raw disk image. Every file begins
+  with the MZ magic and is SHA-256-hashed in `manifests/clean_scan_manifest.csv`
+  (21,728 rows: sha256, NTFS path, size, extracted filename). No binaries are
+  redistributed, exactly as for the other corpora. Note: the corpus is what the
+  installation actually contains; it is not the 50,000-file set the earlier text
+  described, and no NSRL-RDS membership cross-check has been run (the RDSv3
+  modern-minimal database is an 18.8 GB download; the cross-check remains open).
+- **Throughput (measured 2026-11-12, Arch Linux x86-64, i7-14650HX, NVMe,
+  YARA 4.5.7 CLI, batch recursive scan of the extracted directory)**:
+  - six-rule v4 set: 19.9 s for 21,728 files = ~1,093 files/s, peak child RSS
+    ~1,928 MB (results: `results/clean_scan_v4.txt`)
+  - five-rule v5 set: 16.5 s = ~1,321 files/s, peak child RSS ~1,909 MB
+    (results: `results/clean_scan_v5.txt`)
+  These are the figures that replace the inherited 43.2 s / 1,157 samples/s /
+  180 MB in Section 7.9 (hardware is i7-14650HX, not the inherited i7-12700K).
+- **Clean-corpus FP surface (per-file matches in the two result files)**:
+  - v4: generic 15,606/21,728 (71.82%); AsyncRAT 55; NjRAT 4
+  - v5: generic 15,606 (71.82%); NjRAT triad 7,740 (35.62%); AsyncRAT 2,073
+    (9.54%); BankTrojan 680 (3.13%); Custom_C2 8
+  The generic rule's 71.82% clean match rate is the byte-frequency base-rate
+  behaviour the paper already reports (98/99 nulls), i.e. these measurements
+  corroborate the hunting-tier conclusion rather than contradict it.
+- Development-corpus manifest (160 samples): still not evidenced on this
+  machine; the paper's manifest sentence for it should use the rewording
+  already provided in the response document (Anexo C, R4).

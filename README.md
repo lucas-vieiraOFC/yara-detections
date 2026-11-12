@@ -51,6 +51,13 @@ c3e6110ac88fcfbcfaf442aaeca47bb0c08d513ddb31cd96d843c1f455ffc8cf  rules tree, v4
 
 `SHA256SUMS.txt` lists every file in this release.
 
+`rules-frozen-v5.2` (2026-11-12) adds the actually-built clean scan corpus:
+21,728 clean PE binaries extracted from the author's licensed Windows 11 winlab
+VM, with per-file SHA-256 in `manifests/clean_scan_manifest.csv`, the full YARA
+outputs for the v4 and v5 sets in `results/clean_scan_v4.txt` and
+`results/clean_scan_v5.txt`, and measured throughput replacing the inherited
+figures (see the v5.2 addendum in `RESULTS.md`).
+
 `rules-frozen-v5.1` (2026-11-12) corrects repository contents only: verifier crash
 fixes in `tools/sride_triage.py` (no measured result changes; see the v5.1 addendum
 in `RESULTS.md`), completed stealer-binary and era-extension verifier scans, the
